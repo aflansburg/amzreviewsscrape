@@ -3,7 +3,9 @@ import os
 import csv
 
 dir = os.path.dirname(__file__)
-inputFile = os.path.join(dir, 'samples\\ten_asins.csv')
+# inputFile = os.path.join(dir, 'samples\\ten_asins.csv')
+# run on all listings
+inputFile = os.path.join(dir, 'samples\\ALL_ASINs.csv')
 
 # hold on to your butts
 if os.name == 'posix':
