@@ -5,11 +5,13 @@ scrape the number of reviews received and the number of stars as well.
 I hope to add the ability to scrape the actual review text as well, it
 should be trivial, but welcome any PRs.
 
+*** Important Note: If you have 1000 ASINs, this will open 1000 Chrome windows - separate app instances - (although it will close them after the scrape is done).
+
 #### Usage
 Just set the path to your csv of ASINs (no header) in `amzreviewscrape.py` - variable `inputFile`
 I created a directory called `samples`
 
-To run: 
+To run:
 ```
 py amzreviewscrape.py
 ```
