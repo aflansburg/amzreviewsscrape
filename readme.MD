@@ -5,7 +5,11 @@ scrape the number of reviews received and the number of stars as well.
 I hope to add the ability to scrape the actual review text as well, it
 should be trivial, but welcome any PRs.
 
-### Dependencies:
+#### Usage
+Just set the path to your csv of ASINs (no header) in `amzreviewscrape.py` - variable `inputFile`
+I created a directory called `samples`
+
+#### Dependencies:
 This uses Beautiful Soup and the Selenium Web Driver for Google Chrome
 which can be found [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver),
 which you will need to install separately and point
