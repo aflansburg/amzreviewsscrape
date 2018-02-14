@@ -1,3 +1,22 @@
 # amzreviewsscrape
 
-scrape amz product reviews
+This allows you to feed a list of Amazon ASINs in as a .csv (no header) and
+scrape the number of reviews received and the number of stars as well.
+I hope to add the ability to scrape the actual review text as well, it
+should be trivial, but welcome any PRs.
+
+### Dependencies:
+This uses Beautiful Soup and the Selenium Web Driver for Google Chrome
+which can be found [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver),
+which you will need to install separately and point
+
+#### OS Note
+This works on Windows and MacOSx, however take note of the path to the
+selenium web driver in the `driver_path` variable.
+
+#### Output currently looks like:
+
+![output][screenshot]
+
+[screenshot]: https://github.com/aflansburg/amzreviewsscrape/blob/master/scrape-output.png "Output Screen Shot"
+
