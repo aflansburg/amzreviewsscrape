@@ -9,6 +9,11 @@ should be trivial, but welcome any PRs.
 Just set the path to your csv of ASINs (no header) in `amzreviewscrape.py` - variable `inputFile`
 I created a directory called `samples`
 
+To run: 
+```
+py amzreviewscrape.py
+```
+
 #### Dependencies:
 This uses Beautiful Soup and the Selenium Web Driver for Google Chrome
 which can be found [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver),
