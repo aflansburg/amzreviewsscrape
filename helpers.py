@@ -4,8 +4,16 @@ import csv
 import math
 import re
 import pprint
+import os.path
 
 pp = pprint.PrettyPrinter(indent=4)
+
+
+def is_valid_file(parser, arg):
+    if not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        return arg  # return the file path
 
 
 def read_asin_csv(fn):
@@ -85,6 +93,4 @@ def read_reviews(driver, file):
         browser.close()
         # should return an object with all info here (or write out to csv)
         return products
-
-
 

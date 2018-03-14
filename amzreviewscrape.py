@@ -1,9 +1,16 @@
 from helpers import read_reviews
+from helpers import is_valid_file
+import argparse
 import os
 import csv
 
-dir = os.path.dirname(__file__)
-inputFile = os.path.join(dir, 'samples\\for_vendor_direct.csv')
+argparser = argparse.ArgumentParser()
+argparser.add_argument("-asins", dest="filename", required=True, help="Enter the path to your ASIN file.",
+                       type=lambda x: is_valid_file(argparser, x))
+args = argparser.parse_args()
+
+inputFile = args.filename
+print(inputFile)
 
 # check for current os
 if os.name == 'posix':

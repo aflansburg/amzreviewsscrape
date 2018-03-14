@@ -10,7 +10,10 @@ scrape the number of reviews received and the number of stars as well.
 I have recently added the ability to retrieve review text and the number of stars for that rating.
 
 #### Usage
-Just set the path to your csv of ASINs (no header) in `amzreviewscrape.py` - variable `inputFile`.
+Just pass the path to your csv of ASINs (no header) as a command line argument as such
+```
+py amzreviewscrape.py -asins="C:\PATH\TO\ASINS\FILE.CSV"
+```
 
 To run:
 ```
