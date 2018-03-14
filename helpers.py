@@ -1,123 +1,87 @@
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
 import csv
+import math
+import re
+import pprint
 
-def readAsinCSV(fn):
-    asinList = []
+pp = pprint.PrettyPrinter(indent=4)
+
+
+def read_asin_csv(fn):
+    asin_list = []
     with open(fn, newline='') as csvfile:
-        asinReader = csv.reader(csvfile, delimiter=',')
-        for row in asinReader:
-            asinList.append(row[0])
-    return asinList
+        asin_reader = csv.reader(csvfile, delimiter=',')
+        for row in asin_reader:
+            asin_list.append(row[0])
+    return asin_list
 
-def readReviews(driver , file):
 
-    BASE_URL = 'https://www.amazon.com/product-reviews/'
+def read_reviews(driver, file):
+
+    base_url = 'https://www.amazon.com/product-reviews/'
 
     browser = webdriver.Chrome(executable_path=driver)
-    asins = readAsinCSV(file)
+    asins = read_asin_csv(file)
     products = []
 
     if len(asins) > 0:
         for asin in asins:
-            url = BASE_URL + asin
-            browser.get(url)
-            html = browser.page_source
+            review_dict = {asin: {"ratings": [], "review-titles": [], "reviews": []}}
 
-            soup = BS(html, 'html.parser')
+            # get reviews page count
+            url = base_url + asin
+            browser.get(url)
+            source = browser.page_source
+
+            soup = BS(source, 'html.parser')
+
+            total_reviews = soup.find('span', {'data-hook': 'total-review-count'})
+            total_reviews = int(total_reviews.text)
+            page_count = int(math.ceil(total_reviews/10))
+
             # grab the title
             if soup.find('a', {'data-hook': 'product-link'}):
-                title = soup.find('a', {'data-hook': 'product-link'})
-                if (title.text):
-                    title = str(title.text)
+                product_title = soup.find('a', {'data-hook': 'product-link'})
+                if product_title.text:
+                    product_title = str(product_title.text)
                 else:
-                    title = 'No title found'
+                    product_title = 'No title found'
             else:
-                title = 'No title found'
+                product_title = 'No title found'
 
+            if page_count > 0:
+                print(f'Page count: {str(page_count)}')
+                for i in range(page_count):
+                    page = i + 1
+                    page = str(page)
+                    print(f'Fetching page {page}')
+                    browser.get(url + f'/ref=cm_cr_getr_d_paging_btm_{page}?pageNumber={page}')
+                    html = browser.page_source
+                    paged_soup = BS(html, 'html.parser')
+                    stars = paged_soup.find_all('div', {'data-hook': 'review'})
+                    stars = [s for s in stars if 'stars' in s.text]
+                    for star in stars:
+                        if 'stars' in star.text:
+                            regex = "(\d.\d)"
+                            p = re.compile(regex)
+                            match = p.search(star.text)
+                            review_dict[asin]['ratings'].append(match.group(0))
+                    review_titles = paged_soup.find_all('a',
+                          {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'})
+                    review_titles = [r.text for r in review_titles]
+                    for rt in review_titles:
+                        review_dict[asin]['review-titles'].append(rt)
+                    review_text = paged_soup.find_all('span', {'data-hook': 'review-body'})
+                    review_text = [rev.text.replace('\U0001f44d', '') for rev in review_text]
+                    for review in review_text:
+                        review_dict[asin]['reviews'].append(review)
+            data_tuples = []
+            for rr in range(len(review_dict[asin]['reviews'])):
+                data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
+                                    review_dict[asin]['reviews'][rr]))
+            products.append({"asin": asin, "title": product_title, "data": data_tuples})
 
-            # grab the element containing the total number of reviews
-            totalReviews = soup.find('span', {'data-hook': 'total-review-count'})
-            if totalReviews:
-                totalReviews = int(totalReviews.text)
-            else:
-                print('no reviews - FAIL')
-
-            if totalReviews != 0:
-                averageRating = soup.find('span', {'data-hook': 'rating-out-of-text'})
-                averageRating = str(averageRating.text)
-                # grab the element containing the number of 5 star reviews and parse out everything
-                # except for the percentage and then convert it to a float
-                fiveStarsP = soup.find('a', {'a-size-small a-link-normal 5star histogram-review-count'})
-                if fiveStarsP:
-                    fiveStarsP = str(fiveStarsP.text)
-                    fiveStarsP = fiveStarsP.replace('%', '')
-                    fiveStarsP = float(float(fiveStarsP) / 100)
-                    fiveStars = totalReviews * fiveStarsP
-                    fiveStars = int(round(fiveStars, 0))
-                else:
-                    fiveStarsP = 0
-                    fiveStars = 0
-
-                fourStarsP = soup.find('a', {'a-size-small a-link-normal 4star histogram-review-count'})
-                if (fourStarsP):
-                    fourStarsP = str(fourStarsP.text)
-                    fourStarsP = fourStarsP.replace('%', '')
-                    fourStarsP = float(float(fourStarsP) / 100)
-                    fourStars = totalReviews * fourStarsP
-                    fourStars = int(round(fourStars, 0))
-                else:
-                    fourStarsP = 0
-                    fourStars = 0
-
-                threeStarsP = soup.find('a', {'a-size-small a-link-normal 3star histogram-review-count'})
-                if (threeStarsP):
-                    threeStarsP = str(threeStarsP.text)
-                    threeStarsP = threeStarsP.replace('%', '')
-                    threeStarsP = float(float(threeStarsP) / 100)
-                    threeStars = totalReviews * threeStarsP
-                    threeStars = int(round(threeStars, 0))
-                else:
-                    threeStarsP = 0
-                    threeStars = 0
-
-                twoStarsP = soup.find('a', {'a-size-small a-link-normal 2star histogram-review-count'})
-                if (twoStarsP):
-                    twoStarsP = str(twoStarsP.text)
-                    twoStarsP = twoStarsP.replace('%', '')
-                    twoStarsP = float(float(twoStarsP) / 100)
-                    twoStars = totalReviews * twoStarsP
-                    twoStars = int(round(twoStars, 0))
-                else:
-                    twoStarsP = 0
-                    twoStars = 0
-
-                oneStarP = soup.find('a', {'a-size-small a-link-normal 1star histogram-review-count'})
-                if oneStarP:
-                    oneStarP = str(oneStarP.text)
-                    oneStarP = oneStarP.replace('%', '')
-                    oneStarP = float(float(oneStarP) / 100)
-                    oneStar = totalReviews * oneStarP
-                    oneStar = int(round(oneStar, 0))
-                else:
-                    oneStarP = 0
-                    oneStar = 0
-
-                productDict = { 'ASIN': asin, 'title': title, 'totalReviews': totalReviews, 'averageStars': averageRating,
-                               'oneStarReviews': oneStar, 'twoStarReviews': twoStars, 'threeStarReviews': threeStars,
-                               'fourStarReviews': fourStars, 'fiveStarReviews': fiveStars }
-                products.append(productDict)
-                # print(f'\n{title}\n')
-                # print(f'Total reviews: {totalReviews}')
-                # print(f'Average rating: {averageRating}\n')
-                # print(f'Total number of 1 star reviews: {oneStar} ({int(oneStarP*100)}%)')
-                # print(f'Total number of 2 star reviews: {twoStars} ({int(twoStarsP*100)}%)')
-                # print(f'Total number of 3 star reviews: {threeStars} ({int(threeStarsP*100)}%)')
-                # print(f'Total number of 4 star reviews: {fourStars} ({int(fourStarsP*100)}%)')
-                # print(f'Total number of 5 star reviews: {fiveStars} ({int(fiveStarsP*100)}%)')
-            else:
-                print(f'\n{asin}: {title}')
-                print(f'No reviews or ratings!\n')
         browser.close()
         # should return an object with all info here (or write out to csv)
         return products

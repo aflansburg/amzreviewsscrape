@@ -1,33 +1,44 @@
-from helpers import readReviews
+from helpers import read_reviews
 import os
 import csv
 
 dir = os.path.dirname(__file__)
-# inputFile = os.path.join(dir, 'samples\\ten_asins.csv')
-# run on all listings
-inputFile = os.path.join(dir, 'samples\\ALL_ASINs.csv')
+inputFile = os.path.join(dir, 'samples\\for_vendor_direct.csv')
 
-# hold on to your butts
+# check for current os
 if os.name == 'posix':
     # osx
     driver_path = '/usr/local/bin/chromedriver'
 elif os.name == 'nt':
-    #win32
+    # win32
     driver_path = 'C:\chromedriver\chromedriver'
 else:
     print('Unknown operating system!!!')
     exit()
 
-data = readReviews(driver_path, inputFile)
+data = read_reviews(driver_path, inputFile)
 
-fieldnames = []
-for k,v in data[0].items():
-    fieldnames.append(k)
+field_names = ['asin', 'product_title', 'rating', 'review_title', 'review_text']
 
+expanded_reviews = []
+
+for product_reviews in data:
+    _asin = product_reviews['asin']
+    _title = product_reviews['title']
+    _data = product_reviews['data']
+
+    for _d in _data:
+        expanded_reviews.append([_asin, _title, _d[0], _d[1], _d[2]])
 
 with open('output.csv', 'w', newline='') as dataFile:
-    dictWriter = csv.DictWriter(dataFile, fieldnames=fieldnames)
+    writer = csv.writer(dataFile, delimiter=',')
 
-    dictWriter.writeheader()
-    for dict in data:
-        dictWriter.writerow(dict)
+    writer.writerow(field_names)
+    for e in expanded_reviews:
+        writer.writerow(e)
+
+    print(f'Output written to "output.csv"')
+
+
+
+
