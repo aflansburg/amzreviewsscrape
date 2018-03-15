@@ -3,6 +3,7 @@ from helpers import is_valid_file
 import argparse
 import os
 import csv
+import io
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-asins", dest="filename", required=True, help="Enter the path to your ASIN file.",
@@ -37,7 +38,7 @@ for product_reviews in data:
     for _d in _data:
         expanded_reviews.append([_asin, _title, _d[0], _d[1], _d[2]])
 
-with open('output.csv', 'w', newline='') as dataFile:
+with io.open('output.csv', 'w', encoding="utf-8", newline='') as dataFile:
     writer = csv.writer(dataFile, delimiter=',')
 
     writer.writerow(field_names)

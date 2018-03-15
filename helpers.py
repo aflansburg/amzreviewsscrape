@@ -43,6 +43,7 @@ def read_reviews(driver, file):
             source = browser.page_source
 
             soup = BS(source, 'html.parser')
+            # soup = soup.encode("utf-8")
 
             total_reviews = soup.find('span', {'data-hook': 'total-review-count'})
             total_reviews = int(total_reviews.text)
@@ -81,7 +82,7 @@ def read_reviews(driver, file):
                     for rt in review_titles:
                         review_dict[asin]['review-titles'].append(rt)
                     review_text = paged_soup.find_all('span', {'data-hook': 'review-body'})
-                    review_text = [rev.text.replace('\U0001f44d', '') for rev in review_text]
+                    review_text = [rev.text.replace('\U0001f44d', '').replace('\U0001f4a9', '') for rev in review_text]
                     for review in review_text:
                         review_dict[asin]['reviews'].append(review)
             data_tuples = []
