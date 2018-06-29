@@ -35,7 +35,7 @@ def read_reviews(driver, file):
 
     if len(asins) > 0:
         for asin in asins:
-            review_dict = {asin: {"ratings": [], "review-titles": [], "reviews": []}}
+            review_dict = {asin: {"ratings": [], "review-titles": [], "reviews": [], "review-links": []}}
 
             # get reviews page count
             url = base_url + asin
@@ -46,7 +46,7 @@ def read_reviews(driver, file):
             # soup = soup.encode("utf-8")
 
             total_reviews = soup.find('span', {'data-hook': 'total-review-count'})
-            total_reviews = int(total_reviews.text)
+            total_reviews = int(total_reviews.text.replace(",",""))
             page_count = int(math.ceil(total_reviews/10))
 
             # grab the title
@@ -79,6 +79,11 @@ def read_reviews(driver, file):
                     review_titles = paged_soup.find_all('a',
                           {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'})
                     review_titles = [r.text for r in review_titles]
+                    links = paged_soup.find_all('a',
+                          {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'}, href=True)
+                    links = ["https://www.amazon.com%s" % l['href'] for l in links]
+                    for ll in links:
+                        review_dict[asin]['review-links'].append(ll)
                     for rt in review_titles:
                         review_dict[asin]['review-titles'].append(rt)
                     review_text = paged_soup.find_all('span', {'data-hook': 'review-body'})
@@ -88,7 +93,7 @@ def read_reviews(driver, file):
             data_tuples = []
             for rr in range(len(review_dict[asin]['reviews'])):
                 data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
-                                    review_dict[asin]['reviews'][rr]))
+                                    review_dict[asin]['reviews'][rr], review_dict[asin]['review-links'][rr]))
             products.append({"asin": asin, "title": product_title, "data": data_tuples})
 
         browser.close()
