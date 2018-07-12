@@ -35,7 +35,7 @@ def read_reviews(driver, file):
 
     if len(asins) > 0:
         for asin in asins:
-            review_dict = {asin: {"ratings": [], "review-titles": [], "variation": [], "reviews": [], "review-links": [], }}
+            review_dict = {asin: {"ratings": [], "review-titles": [], "variations": [], "reviews": [], "review-links": [], }}
 
             # get reviews page count
             url = base_url + asin
@@ -80,11 +80,15 @@ def read_reviews(driver, file):
                           {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'})
                     review_titles = [r.text for r in review_titles]
                     variations = paged_soup.find_all('span', {'class': 'a-color-secondary'})
+                    variations_2 = paged_soup.find_all('a', {'class': 'a-size-mini a-link-normal a-color-secondary'})
                     if variations:
                         variations = [v.text for v in variations if 'Color' in v.text or 'Size' in v.text]
                     else:
                         variations = ["N/A"]
-                    review_dict[asin]['variation'] = variations
+                    if variations_2:
+                        variations_2 = [v.text for v in variations_2 if 'Color' in v.text or 'Size' in v.text]
+                        for v in variations_2:
+                            variations.append(v)
                     links = paged_soup.find_all('a',
                           {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'}, href=True)
                     links = ["https://www.amazon.com%s" % l['href'] for l in links]
@@ -96,10 +100,12 @@ def read_reviews(driver, file):
                     review_text = [rev.text.replace('\U0001f44d', '').replace('\U0001f4a9', '') for rev in review_text]
                     for review in review_text:
                         review_dict[asin]['reviews'].append(review)
+                    for v in variations:
+                        review_dict[asin]['variations'].append(v)
             data_tuples = []
             for rr in range(len(review_dict[asin]['reviews'])):
                 data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
-                                    review_dict[asin]['variation'][rr], review_dict[asin]['reviews'][rr], 
+                                    review_dict[asin]['variations'][rr], review_dict[asin]['reviews'][rr], 
                                     review_dict[asin]['review-links'][rr]))
             products.append({"asin": asin, "title": product_title, "data": data_tuples})
 
