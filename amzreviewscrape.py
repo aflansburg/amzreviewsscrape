@@ -26,7 +26,7 @@ else:
 
 data = read_reviews(driver_path, inputFile)
 
-field_names = ['asin', 'product_title', 'rating', 'review_title', 'review_text', 'review-links']
+field_names = ['asin', 'product_title', 'rating', 'review_title', 'variation', 'review_text', 'review-links']
 
 expanded_reviews = []
 
@@ -36,7 +36,7 @@ for product_reviews in data:
     _data = product_reviews['data']
 
     for _d in _data:
-        expanded_reviews.append([_asin, _title, _d[0], _d[1], _d[2], _d[3]])
+        expanded_reviews.append([_asin, _title, _d[0], _d[1], _d[2], _d[3], _d[4]])
 
 with io.open('output.csv', 'w', encoding="utf-8", newline='') as dataFile:
     writer = csv.writer(dataFile, delimiter=',')

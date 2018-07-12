@@ -35,7 +35,7 @@ def read_reviews(driver, file):
 
     if len(asins) > 0:
         for asin in asins:
-            review_dict = {asin: {"ratings": [], "review-titles": [], "reviews": [], "review-links": []}}
+            review_dict = {asin: {"ratings": [], "review-titles": [], "variation": [], "reviews": [], "review-links": [], }}
 
             # get reviews page count
             url = base_url + asin
@@ -79,6 +79,12 @@ def read_reviews(driver, file):
                     review_titles = paged_soup.find_all('a',
                           {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'})
                     review_titles = [r.text for r in review_titles]
+                    variations = paged_soup.find_all('span', {'class': 'a-color-secondary'})
+                    if variations:
+                        variations = [v.text for v in variations if 'Color' in v.text or 'Size' in v.text]
+                    else:
+                        variations = ["N/A"]
+                    review_dict[asin]['variation'] = variations
                     links = paged_soup.find_all('a',
                           {'class': 'a-size-base a-link-normal review-title a-color-base a-text-bold'}, href=True)
                     links = ["https://www.amazon.com%s" % l['href'] for l in links]
@@ -93,7 +99,8 @@ def read_reviews(driver, file):
             data_tuples = []
             for rr in range(len(review_dict[asin]['reviews'])):
                 data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
-                                    review_dict[asin]['reviews'][rr], review_dict[asin]['review-links'][rr]))
+                                    review_dict[asin]['variation'][rr], review_dict[asin]['reviews'][rr], 
+                                    review_dict[asin]['review-links'][rr]))
             products.append({"asin": asin, "title": product_title, "data": data_tuples})
 
         browser.close()
