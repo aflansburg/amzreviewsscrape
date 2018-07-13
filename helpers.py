@@ -84,7 +84,7 @@ def read_reviews(driver, file):
                     if variations:
                         variations = [v.text for v in variations if 'Color' in v.text or 'Size' in v.text]
                     else:
-                        variations = ["N/A"]
+                        variations = []
                     if variations_2:
                         variations_2 = [v.text for v in variations_2 if 'Color' in v.text or 'Size' in v.text]
                         for v in variations_2:
@@ -100,13 +100,21 @@ def read_reviews(driver, file):
                     review_text = [rev.text.replace('\U0001f44d', '').replace('\U0001f4a9', '') for rev in review_text]
                     for review in review_text:
                         review_dict[asin]['reviews'].append(review)
-                    for v in variations:
-                        review_dict[asin]['variations'].append(v)
+                    if len(variations) != 0:
+                        for v in variations:
+                            review_dict[asin]['variations'].append(v)
+                    else:
+                        review_dict[asin]['variations'] = []
             data_tuples = []
             for rr in range(len(review_dict[asin]['reviews'])):
-                data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
-                                    review_dict[asin]['variations'][rr], review_dict[asin]['reviews'][rr], 
-                                    review_dict[asin]['review-links'][rr]))
+                try:
+                    data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
+                                        review_dict[asin]['variations'][rr], review_dict[asin]['reviews'][rr], 
+                                        review_dict[asin]['review-links'][rr]))
+                except IndexError:
+                    data_tuples.append((review_dict[asin]['ratings'][rr], review_dict[asin]['review-titles'][rr],
+                                        'N/A', review_dict[asin]['reviews'][rr], 
+                                        review_dict[asin]['review-links'][rr]))
             products.append({"asin": asin, "title": product_title, "data": data_tuples})
 
         browser.close()
