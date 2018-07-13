@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import csv
 import math
 import re
@@ -8,6 +9,9 @@ import os.path
 
 pp = pprint.PrettyPrinter(indent=4)
 
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--window-size=1920x1080")
 
 def is_valid_file(parser, arg):
     if not os.path.exists(arg):
@@ -29,7 +33,7 @@ def read_reviews(driver, file):
 
     base_url = 'https://www.amazon.com/product-reviews/'
 
-    browser = webdriver.Chrome(executable_path=driver)
+    browser = webdriver.Chrome(chrome_options=chrome_options,executable_path=driver)
     asins = read_asin_csv(file)
     products = []
 
