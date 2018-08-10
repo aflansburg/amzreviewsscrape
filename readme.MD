@@ -13,7 +13,11 @@ Just pass the path to your csv of ASINs (no header) as a command line argument a
 py amzreviewscrape.py -asins="C:\PATH\TO\ASINS\FILE.CSV"
 ```
 
+
+
 #### Dependencies:
+Requires [Python version 3.6.3](https://www.python.org/downloads/release/python-363/) or [greater](https://www.python.org/downloads/)
+
 This uses Beautiful Soup and the Selenium Web Driver for Google Chrome
 which can be found [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver),
 which you will need to install separately and point to in amzreviewscrape.py unless you install to
