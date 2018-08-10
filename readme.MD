@@ -1,8 +1,6 @@
 # Scrape Amazon Review Pages
 
-Amazon has a system in place to keep you from scraping their pages. What this Python app does is open individual browser windows and scrapes
-the content on the page displayed using the [Selenium WebDriver](http://www.seleniumhq.org/download/) for Chrome.
-After each scrape, the opened Chrome window is closed.
+Amazon has a system in place to keep you from scraping their pages. What this Python app does is scrape a page from a headless Chrome browser instance using the [Selenium WebDriver](http://www.seleniumhq.org/download/) for Chrome.
 
 This allows you to feed a list of Amazon ASINs in as a .csv (no header) and
 scrape the number of reviews received and the number of stars as well.
@@ -18,7 +16,22 @@ py amzreviewscrape.py -asins="C:\PATH\TO\ASINS\FILE.CSV"
 #### Dependencies:
 This uses Beautiful Soup and the Selenium Web Driver for Google Chrome
 which can be found [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver),
-which you will need to install separately and point
+which you will need to install separately and point to in amzreviewscrape.py unless you install to
+either `usr/local/bin/chromedriver for OSx/Linux` or `C:\chromedriver\chromedriver\` for Windows
+
+```
+# Relevant Code Sample from amzreviewscrape.py for chromedriver directory
+# check for current os
+if os.name == 'posix':
+    # osx
+    driver_path = '/usr/local/bin/chromedriver'
+elif os.name == 'nt':
+    # win32
+    driver_path = 'C:\chromedriver\chromedriver'
+else:
+    print('Unknown operating system!!!')
+    exit()
+```
 
 #### OS Note
 This works on Windows and MacOSx, however take note of the path to the
