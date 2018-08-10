@@ -5,7 +5,7 @@ Amazon has a system in place to keep you from scraping their pages. What this Py
 This allows you to feed a list of Amazon ASINs in as a .csv (no header) and
 scrape the number of reviews received and the number of stars as well.
 
-I have recently added the ability to retrieve review text and the number of stars for that rating.
+Fields that will be retrieved are: ```'asin', 'product_title', 'rating', 'review_title', 'variation', 'review_text', 'review-links'```
 
 #### Usage
 Just pass the path to your csv of ASINs (no header) as a command line argument as such
