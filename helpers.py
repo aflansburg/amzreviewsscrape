@@ -30,16 +30,18 @@ def read_asin_csv(fn):
     return asin_list
 
 
-def read_reviews(driver, file):
-
+def read_reviews(driver, file, chromedriver_options):
+    if len(chromedriver_options):
+        [chrome_options.add_argument(f"--{c}") for c in chromedriver_options]
     base_url = 'https://www.amazon.com/product-reviews/'
 
+    print(f"\nUsing Chromedriver with Options: #{chrome_options.arguments}\n")
     browser = webdriver.Chrome(chrome_options=chrome_options,executable_path=driver)
     asins = read_asin_csv(file)
     products = []
 
     if len(asins) > 0:
-        print(f"\nWorking with {str(len(asins)) ASINS}:\n----------------------------")
+        print(f"\nWorking with {str(len(asins))} ASINS:\n----------------------------")
         for asin in asins:
             review_dict = {asin: {"ratings": [], "review-titles": [], "reviews": [], "review-links": [], }}
 

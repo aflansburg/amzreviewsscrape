@@ -37,6 +37,19 @@ py amzreviewscrape.py --asins="C:\PATH\TO\ASINS\FILE.CSV" --driverpath="C:\PATH\
 py amzreviewscrape.py --asins="/path/to/asins/csv" --driverpath="/path/to/chromedriver"
 ```
 
+To pass additional options to chromedriver such as:
+
+```
+--disable-dev-shm-usage
+--no-sandbox
+```
+
+You can pass the options with `--options` and separated by commas:
+
+```
+py amzreviewscrape.py --asins="/path/to/asins/csv" --driverpath="/path/to/chromedriver" --options="disable-dev-shm-usage,no-sandbox"
+```
+
 #### Dependencies:
 
 Requires >= [Python version 3.6.3](https://www.python.org/downloads/release/python-363/)

@@ -10,11 +10,13 @@ argparser.add_argument("--asins", dest="filename", required=True, help="Enter th
                        type=lambda x: is_valid_file(argparser, x))
 argparser.add_argument("--driverpath", dest="driver_path", required=False, help="Enter the path to your chromedriver file.",
                        type=lambda x: is_valid_file(argparser, x))
+argparser.add_argument("--options", dest="additional_options", required=False, help="Pass additional options to chromedriver.")
 args = argparser.parse_args()
 
 inputFile = args.filename
 driver_path = args.driver_path
-print(inputFile)
+additional_options = args.additional_options.split(',')
+print(f"\nUsing ASINs from file: {inputFile}\n\n")
 
 # check for current os
 if driver_path is None:
@@ -28,7 +30,7 @@ if driver_path is None:
         print('Unknown operating system!!!')
         exit()
 
-data = read_reviews(driver_path, inputFile)
+data = read_reviews(driver=driver_path, file=inputFile, chromedriver_options=additional_options)
 # *** Commenting out variations for now, as they may not work as expected ***
 # field_names = ['asin', 'product_title', 'rating', 'review_title', 'variation', 'review_text', 'review-links']
 field_names = ['asin', 'product_title', 'rating', 'review_title', 'review_text', 'review-links']
