@@ -1,3 +1,6 @@
+#NOTICE!
+This project has been archived. The ever changing structure of Amazon reviews and the newer mechansisms in place to prevent web scraping are formidable.
+
 # Scrape Amazon Review Pages
 
 Amazon has a system in place to keep you from scraping their pages. What this Python app does is scrape a page from a headless Chrome browser instance using the [Selenium WebDriver](http://www.seleniumhq.org/download/) for Chrome.
